@@ -3,11 +3,9 @@ package com.app.demo.entity;
 import com.app.demo.enums.Direction;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@NoArgsConstructor
 public class Drone {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,6 +14,12 @@ public class Drone {
     private int x;
     private int y;
     private Direction direction;
+
+    public Drone() {
+        this.x = 0;
+        this.y = 0;
+        this.direction = Direction.NORTH;
+    }
 
     public Drone(int x, int y, Direction direction) {
         this.x = x;
