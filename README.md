@@ -4,7 +4,7 @@
 
 * Java 17
 * Spring Boot 3.1.3
-* H2 Database for testing
+* H2 Database
 * Spring Boot JPA
 * Lombok
 * Docker
