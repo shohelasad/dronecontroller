@@ -36,19 +36,15 @@ docker-compose up -d --build
 * Implement unit tests, integration tests with JUnit5 and mockito.
 * Implement JaCoCo to measure code coverage and ensure that critical code paths are tested.
 
-## Design patterns
-
-* RESTful API Design Pattern: REST (Representational State Transfer) expose the endpoints restfully way
-* Controller-Service-Repository Pattern:
-  Controller: Receives incoming HTTP requests, handles request validation, and invokes the appropriate service methods.
-  Service: Contains the business logic, including validation and processing, and interacts with the repository.
-  Repository: Manages data storage and retrieval.
-* DTO (Data Transfer Object) Pattern: Use DTOs to transfer data between your API and the client.
-* Error Handling Patterns: Implement a consistent error-handling mechanism using Spring's exception handling. Return meaningful error responses in JSON format.
-* Dependency Injection (DI) Pattern: Implement DI with constructor injection
+## Design Approach
+* For a single drone controller, I can handle without in datastore like H2. I consider a server where multiple drones can be connected and controlled by client
+* I can use a HashMap for local data storage considering better performance for small data, but I would consider moving to an H2 database for extensibility.
+* Implement RESTful API Design Pattern with controller, service and repository pattern
+* Implement a consistent error-handling mechanism using Spring's exception handling.
+* Implement Dependency Injection (DI) with constructor injection
 
 ## Advance Plan
-* Replace in memory database to store the information for keeping history
+* Replace in memory database to store the information for keeping history considering server can be restarted
 * Set Drone initialized location by GPS tracking
 
 ## API Definition
