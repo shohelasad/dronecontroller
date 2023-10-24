@@ -13,8 +13,9 @@ public class Drone {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
-    private int x;
-    private int y;
+    private Integer x;
+    private Integer y;
+    @Enumerated(EnumType.STRING)
     private Direction direction;
 
     public Drone() {
@@ -23,7 +24,7 @@ public class Drone {
         this.direction = Direction.NORTH;
     }
 
-    public Drone(int x, int y, Direction direction) {
+    public Drone(Integer x, Integer y, Direction direction) {
         this.x = x;
         this.y = y;
         this.direction = direction;
