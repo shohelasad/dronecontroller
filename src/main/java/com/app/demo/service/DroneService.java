@@ -26,10 +26,10 @@ public class DroneService {
     }
 
     public DroneDto registerDrone(DroneDto droneDto) {
-        if(droneDto.getX() >= maxX || droneDto.getX() < 0 || droneDto.getY() >= maxY || droneDto.getY() < 0) {
+        if(droneDto.x() >= maxX || droneDto.x() < 0 || droneDto.y() >= maxY || droneDto.y() < 0) {
             throw new BadRequestException("Drone initialized location is not valid!");
         }
-        Drone drone = new Drone(droneDto.getX(), droneDto.getY(), droneDto.getDirection());
+        Drone drone = new Drone(droneDto.x(), droneDto.y(), droneDto.direction());
         Drone registered = droneRepository.save(drone);
         log.info("Registered drone: {}", registered);
         return convertToDto(registered);
@@ -62,7 +62,7 @@ public class DroneService {
     public String goForward(Long droneId) {
         Drone drone = droneRepository.findById(droneId)
                 .orElseThrow(() -> new ResourceNotFoundException("Drone not found: " + droneId));
-        if (!canGoForward(drone)) {
+        if (!DroneUtils.canGoForward(drone, maxX, maxY)) {
             return "Cannot do it [" + drone.getX() + ", " + drone.getY() + "]";
         }
         DroneUtils.goForward(drone);
@@ -77,15 +77,6 @@ public class DroneService {
 
     private String getDroneLocation(Drone drone) {
         return "[" + drone.getX() + ", " + drone.getY() + "]";
-    }
-
-    private boolean canGoForward(Drone drone) {
-        return switch (drone.getDirection()) {
-            case NORTH -> drone.getY() < maxY - 1;
-            case EAST -> drone.getX() < maxX - 1;
-            case SOUTH -> drone.getY() > 0;
-            case WEST -> drone.getX() > 0;
-        };
     }
 
     private DroneDto convertToDto(Drone drone) {

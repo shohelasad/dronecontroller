@@ -53,4 +53,13 @@ public class DroneUtils {
         drone.setX(x);
         drone.setY(y);
     }
+
+    public static boolean canGoForward(Drone drone, int maxX, int maxY) {
+        return switch (drone.getDirection()) {
+            case NORTH -> drone.getY() < maxY - 1;
+            case EAST -> drone.getX() < maxX - 1;
+            case SOUTH -> drone.getY() > 0;
+            case WEST -> drone.getX() > 0;
+        };
+    }
 }
