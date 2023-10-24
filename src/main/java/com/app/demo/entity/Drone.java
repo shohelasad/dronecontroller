@@ -2,10 +2,12 @@ package com.app.demo.entity;
 
 import com.app.demo.enums.Direction;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Entity
+@AllArgsConstructor
 public class Drone {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

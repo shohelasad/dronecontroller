@@ -4,67 +4,78 @@ import com.app.demo.dto.DroneDto;
 import com.app.demo.entity.Drone;
 import com.app.demo.exception.BadRequestException;
 import com.app.demo.exception.ResourceNotFoundException;
-import com.app.demo.repository.DroneRepository;
 import com.app.demo.utils.DroneUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 @Slf4j
 @Service
-public class DroneService {
+public class DroneServiceInMemory {
     private final int maxX;
     private final int maxY;
-    private final DroneRepository droneRepository;
+    private final Map<Long, Drone> droneMap;
+    private final AtomicLong nextDroneId = new AtomicLong(1);
 
-    public DroneService(@Value("${field.x}") int maxX,  @Value("${field.y}") int maxY, DroneRepository droneRepository) {
+    public DroneServiceInMemory(@Value("${field.x}") int maxX, @Value("${field.y}") int maxY) {
         this.maxX = maxX;
         this.maxY = maxY;
-        this.droneRepository = droneRepository;
+        this.droneMap = new ConcurrentHashMap<>();
     }
 
     public DroneDto registerDrone(DroneDto droneDto) {
-        if(droneDto.x() >= maxX || droneDto.x() < 0 || droneDto.y() >= maxY || droneDto.y() < 0) {
+        if (droneDto.x() >= maxX || droneDto.x() < 0 || droneDto.y() >= maxY || droneDto.y() < 0) {
             throw new BadRequestException("Drone initialized location is not valid!");
         }
-        Drone drone = new Drone(droneDto.x(), droneDto.y(), droneDto.direction());
-        Drone registered = droneRepository.save(drone);
-        log.info("Registered drone: {}", registered);
-        return convertToDto(registered);
+        long droneId = nextDroneId.getAndIncrement();
+        Drone drone = new Drone(droneId, droneDto.x(), droneDto.y(), droneDto.direction());
+        droneMap.put(droneId, drone);
+        log.info("Registered drone: {}", drone);
+        return convertToDto(drone);
     }
 
     public void unregisterDrone(Long droneId) {
-        droneRepository.deleteById(droneId);
+        droneMap.remove(droneId);
     }
 
     public String getCurrentLocation(Long droneId) {
-        Drone drone = droneRepository.findById(droneId)
-                .orElseThrow(() -> new ResourceNotFoundException("Drone not found: " + droneId));
+        Drone drone = (Drone) droneMap.get(droneId);
+        if (drone == null) {
+            throw new ResourceNotFoundException("Drone not found: " + droneId);
+        }
         log.info("Fetching location of drone: {}", drone);
         return getDroneLocation(drone);
     }
 
     public String turnDrone(Long droneId, String turnDirection) {
-        Drone drone = droneRepository.findById(droneId)
-                .orElseThrow(() -> new ResourceNotFoundException("Drone not found: " + droneId));
+        Drone drone = (Drone) droneMap.get(droneId);
+        if (drone == null) {
+            throw new ResourceNotFoundException("Drone not found: " + droneId);
+        }
+
         if (turnDirection.equals("left")) {
             DroneUtils.turnLeft(drone);
         } else if (turnDirection.equals("right")) {
             DroneUtils.turnRight(drone);
         }
-        droneRepository.save(drone);
         log.info("Turned drone: {}", drone);
         return getDroneStatus(drone);
     }
 
     public String goForward(Long droneId) {
-        Drone drone = droneRepository.findById(droneId)
-                .orElseThrow(() -> new ResourceNotFoundException("Drone not found: " + droneId));
+        Drone drone = (Drone) droneMap.get(droneId);
+        if (drone == null) {
+            throw new ResourceNotFoundException("Drone not found: " + droneId);
+        }
+
         if (!DroneUtils.canGoForward(drone, maxX, maxY)) {
             return "Cannot do it [" + drone.getX() + ", " + drone.getY() + "]";
         }
         DroneUtils.goForward(drone);
-        droneRepository.save(drone);
         log.info("Moved forward drone: {}", drone);
         return "Now I am at " + getDroneLocation(drone);
     }
