@@ -42,7 +42,7 @@ docker-compose up -d --build
 * I have included the DroneServiceInMemory as a code example to illustrate how to utilize HashMap or ConcurrentHashMap.
 * I am planning to adhere to the RESTful API design pattern by employing controller, service, and repository patterns.
 * I intend to establish a consistent error-handling mechanism using Spring's exception handling capabilities.
-* I will implement Dependency Injection (DI) through constructor injection to manage component dependencies effectively.
+* I implemented Dependency Injection (DI) through constructor injection to manage component dependencies effectively.
 
 ## Advance Plan
 * Replace in memory database to store the information for keeping history considering server can be restarted
