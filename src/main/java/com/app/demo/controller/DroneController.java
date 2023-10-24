@@ -2,14 +2,17 @@ package com.app.demo.controller;
 
 import com.app.demo.dto.DroneDto;
 import com.app.demo.service.DroneService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/drones")
+@Validated
 public class DroneController {
 
     private final DroneService droneService;
@@ -19,7 +22,7 @@ public class DroneController {
     }
 
     @PostMapping
-    public ResponseEntity<DroneDto> registerDrone(@RequestBody DroneDto drone) {
+    public ResponseEntity<DroneDto> registerDrone(@Valid @RequestBody DroneDto drone) {
         log.info("Registering a new drone: {}", drone);
         return ResponseEntity.status(HttpStatus.CREATED).body(droneService.registerDrone(drone));
     }
