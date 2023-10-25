@@ -2,6 +2,7 @@ package com.app.demo.entity;
 
 import com.app.demo.enums.Direction;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,7 +14,9 @@ public class Drone {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
+    @NotNull
     private Integer x;
+    @NotNull
     private Integer y;
     @Enumerated(EnumType.STRING)
     private Direction direction;
